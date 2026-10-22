@@ -1,0 +1,41 @@
+schema_version: "1.0"
+
+extension:
+  id: confluence
+  name: "Confluence Source Integration"
+  version: "1.0.0"
+  description: "Fetch content straight from a Confluence page via the Atlassian MCP server for speckit.docsync.usespec to reconcile into spec.md, instead of a hand-copied paste"
+  category: integration
+  effect: read-only
+  author: "Sergey Glazyrin"
+  repository: https://github.com/sergeyglazyrindev/spec-kit-doc-first
+  license: MIT
+  homepage: https://github.com/sergeyglazyrindev/spec-kit-doc-first/tree/main/extensions/confluence
+
+requires:
+  speckit_version: ">=0.12.17"
+  tools:
+    - name: atlassian-mcp-server
+      required: true
+      description: "Official Atlassian remote MCP server. Provides getConfluenceContent (read a page by ID or URL) and searchConfluence (CQL search). Cloud only -- no Server/Data Center support."
+      install_url: "https://github.com/atlassian/atlassian-mcp-server"
+
+provides:
+  commands:
+    - name: speckit.confluence.fetch
+      file: commands/speckit.confluence.fetch.md
+      description: "Fetch a Confluence page referenced in the input, via the Atlassian MCP server, and output its content"
+
+hooks:
+  before_usespec:
+    command: speckit.confluence.fetch
+    optional: false
+    description: "Resolve a Confluence page URL (or confluence:<pageId> shorthand) given to speckit.docsync.usespec / speckit.docsync.refreshspec into content, via the Atlassian MCP server. Runs automatically when either command dispatches it; a no-op when the source has no Confluence reference, or when the MCP server isn't connected."
+
+tags:
+  - "confluence"
+  - "atlassian"
+  - "mcp"
+  - "wiki"
+  - "integration"
+  - "source-of-truth"

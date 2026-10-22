@@ -1,0 +1,32 @@
+schema_version: "1.0"
+
+extension:
+  id: docsync
+  name: "Documentation Source Sync"
+  version: "1.0.0"
+  description: "Pull an external documentation source (Confluence, Docmost, or pasted text) into a feature spec, and later re-sync every feature artifact against it"
+  category: integration
+  effect: read-write
+  author: "Sergey Glazyrin"
+  repository: https://github.com/sergeyglazyrindev/spec-kit-doc-first
+  license: MIT
+  homepage: https://github.com/sergeyglazyrindev/spec-kit-doc-first/tree/main/extensions/docsync
+
+requires:
+  speckit_version: ">=0.12.17"
+
+provides:
+  commands:
+    - name: speckit.docsync.usespec
+      file: commands/speckit.docsync.usespec.md
+      description: "Pull an external documentation source into the current feature: create a new spec from it if none exists yet, or reconcile an existing spec's sections against it"
+    - name: speckit.docsync.refreshspec
+      file: commands/speckit.docsync.refreshspec.md
+      description: "Re-fetch the documentation source already on record for the current feature and reconcile every existing feature artifact against it"
+
+tags:
+  - "documentation"
+  - "wiki"
+  - "integration"
+  - "source-of-truth"
+  - "spec-sync"
