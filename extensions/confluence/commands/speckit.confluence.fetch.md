@@ -34,12 +34,12 @@ If the input contains neither form anywhere in the text, there is nothing to fet
    - Full URL form: pass the URL itself as the content locator (the tool accepts a page by ID or URL directly — do not try to parse out a page ID yourself).
    - Shorthand form: pass the extracted `<pageId>` as the content ID.
 3. **On a tool error** (not found, no access, auth expired, etc.): report it as a `matched: true` fetch error — do **not** fabricate content and do not fall back to treating the raw reference string (the URL/shorthand) as if it were the page's content. Suggest checking the link and the MCP server's connection/permissions.
-4. **On success**: the tool returns the page's title, body, and its own Confluence content ID (needed for step 5). Treat this as `matched: true` with `title`/`content`/`sourceUrl`/`fetchedAt`, mirroring the sibling `docmost` extension's JSON contract even though this one has no script to literally emit JSON.
+4. **On success**: the tool returns the page's title, body, and its own Confluence content ID (needed for step 5). Treat this as `matched: true` with `title`/`content`/`sourceUrl`/`fetchedAt`, matching the `docsync` extension's `before_usespec` JSON contract even though this one has no script to literally emit JSON.
 5. **Fetch direct child pages** (bounded, best-effort — a failure here never invalidates the step-4 result, which already stands on its own):
    - Call `searchConfluence` with CQL `parent = <pageId> and type = page`, where `<pageId>` is the content ID from step 4 (`parent =` returns direct children only — use `ancestor =` never, since that returns the entire recursive subtree, not what this command does).
    - Limit to the first 20 results; if more exist, note that the children list is truncated.
    - For each result, call `getConfluenceContent` to get its full body (search results are lightweight — title/excerpt/URL, not the full page). Skip any child that errors rather than failing the whole command.
-   - Collect these as `children`: a list of `{title, content, sourceUrl}` per child, alongside a `childrenTruncated` flag — same shape as the sibling `docmost` extension emits.
+   - Collect these as `children`: a list of `{title, content, sourceUrl}` per child, alongside a `childrenTruncated` flag, per the `docsync` extension's contract.
 6. **Report the result**. If invoked standalone, print the root page under a clear heading as a preview, followed by one line per child fetched:
 
    ```markdown

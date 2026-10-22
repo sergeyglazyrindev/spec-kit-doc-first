@@ -4,7 +4,7 @@ extension:
   id: docsync
   name: "Documentation Source Sync"
   version: "1.0.0"
-  description: "Pull an external documentation source (Confluence, Docmost, or pasted text) into a feature spec, and later re-sync every feature artifact against it"
+  description: "Pull an external documentation source (Confluence, or pasted text) into a feature spec, and later re-sync every feature artifact against it"
   category: integration
   effect: read-write
   author: "Sergey Glazyrin"

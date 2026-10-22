@@ -37,7 +37,7 @@ Execution steps:
    - Check if `.specify/extensions.yml` exists and look for entries under `hooks.before_usespec`.
    - If the YAML cannot be parsed, tell the user it couldn't be read (include the parser error) and treat this as "no hooks registered" below.
    - Filter out hooks where `enabled` is explicitly `false`. Skip any hook with a non-empty `condition`.
-   - If no hooks are registered: tell the user none of the installed extensions can fetch this source (mention `docmost`/`confluence` if neither is installed) and stop — unlike `speckit.docsync.usespec`, there is no manual-paste fallback here, since there's no interactive moment to ask for pasted content in a refresh.
+   - If no hooks are registered: tell the user none of the installed extensions can fetch this source (mention `confluence` if it isn't installed) and stop — unlike `speckit.docsync.usespec`, there is no manual-paste fallback here, since there's no interactive moment to ask for pasted content in a refresh.
    - Otherwise, for each remaining hook **in order**: invoke its `command` with the source text from step 2 as its argument — run it the same way you would run the command yourself in this agent/session. Parse its JSON result.
      - `"matched": true` (success or error) stops the search — this hook claimed the reference.
      - `"matched": false` continues to the next hook.

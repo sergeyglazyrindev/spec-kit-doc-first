@@ -3,12 +3,11 @@
 Fetch content straight from a Confluence page — plus its direct child
 pages, so the feature's supporting detail comes along automatically — so
 `spec.md` can be reconciled against the wiki itself, instead of someone
-hand-copying (and silently drifting from) it. Unlike the sibling `docmost`
-extension, this one has **no fetch script and no API token to manage** — it
-calls Atlassian's own official remote MCP server tools directly, so the AI
-agent itself does the fetching.
+hand-copying (and silently drifting from) it. This extension has **no fetch
+script and no API token to manage** — it calls Atlassian's own official
+remote MCP server tools directly, so the AI agent itself does the fetching.
 
-Like `docmost`, this is an **input**, not an automatic ongoing sync: each
+This is an **input**, not an automatic ongoing sync: each
 `speckit.docsync.usespec` run (provided by the sibling `docsync` extension,
 which dispatches this one) is a deliberate, one-time reconciliation. To pull
 in later page edits, either run `speckit.docsync.usespec` again, or run
@@ -97,10 +96,8 @@ succeeded and stands on its own.
 
 ## Why no fetch script?
 
-The sibling `docmost` extension calls Docmost's REST API directly with a
-bash/python script and a personal API token, because Docmost's own MCP
-server is gated behind a paid Business/Enterprise license. Confluence's
-official MCP server has no such gate on Cloud, so there's a cleaner option:
-let the AI agent call it directly, exactly like Spec Kit's own `github`
+Confluence's official MCP server has no licensing gate on Cloud, so there's
+a cleaner option than a REST script with a stored API token: let the AI
+agent call the MCP server directly, exactly like Spec Kit's own `github`
 extension calls the `github-mcp-server`'s tools instead of shelling out to
 the GitHub REST API. No token to store, no script to maintain.

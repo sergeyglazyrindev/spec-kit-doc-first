@@ -1,8 +1,8 @@
 # Documentation Source Sync
 
-Treat an external doc page (Confluence, Docmost, or anything you can paste)
-as the source of truth for a Spec Kit feature, instead of a spec that
-quietly drifts from the wiki someone else keeps editing.
+Treat an external doc page (Confluence, or anything you can paste) as the
+source of truth for a Spec Kit feature, instead of a spec that quietly
+drifts from the wiki someone else keeps editing.
 
 ## Commands
 
@@ -26,7 +26,7 @@ whichever extension claims the given reference, via a hook event named
 ```yaml
 hooks:
   before_usespec:
-    command: speckit.docmost.fetch   # or speckit.confluence.fetch, etc.
+    command: speckit.confluence.fetch   # or another fetch integration
     optional: false
 ```
 
@@ -34,17 +34,18 @@ Both commands read `.specify/extensions.yml` for `hooks.before_usespec`
 entries and invoke each hook's command with the source text, expecting one
 JSON object back: `{"matched": true|false, "title", "content", "sourceUrl",
 "fetchedAt", "children"?, "childrenTruncated"?, "error"?}`. The first hook to
-report `matched: true` wins. See the sibling `docmost` and `confluence`
-extensions for two working implementations of this contract — install
-either (or both) alongside this extension to give `usespec`/`refreshspec`
-something to fetch from. Without one installed, `usespec` falls back to
-asking the user to paste content directly; `refreshspec` has no such
-fallback (there's no interactive moment mid-refresh) and stops with an
-error telling the user which extension to install.
+report `matched: true` wins. See the sibling `confluence` extension for a
+working implementation of this contract — install it (or your own,
+implementing the same contract) alongside this extension to give
+`usespec`/`refreshspec` something to fetch from. Without one installed,
+`usespec` falls back to asking the user to paste content directly;
+`refreshspec` has no such fallback (there's no interactive moment
+mid-refresh) and stops with an error telling the user which extension to
+install.
 
 `before_usespec` is a custom event owned by this extension's commands, not a
 core Spec Kit hook — any extension can register a fetch integration under
-it, the same way `docmost` and `confluence` do.
+it, the same way `confluence` does.
 
 ## Post-execution hooks
 
@@ -83,9 +84,9 @@ specify extension add --dev /path/to/spec-kit-doc-first/extensions/docsync
 specify init my-project --extension /path/to/spec-kit-doc-first/extensions/docsync
 ```
 
-Install at least one fetch integration alongside it (`docmost`, `confluence`,
-or your own extension implementing the same `before_usespec` contract) —
-otherwise every run falls back to pasting content by hand.
+Install at least one fetch integration alongside it (`confluence`, or your
+own extension implementing the same `before_usespec` contract) — otherwise
+every run falls back to pasting content by hand.
 
 ## Why a standalone extension, not a core command
 

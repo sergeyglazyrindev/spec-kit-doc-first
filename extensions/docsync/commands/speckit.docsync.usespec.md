@@ -1,5 +1,5 @@
 ---
-description: Ask the user for an external documentation source for the current feature (e.g. a Confluence or Docmost page) and which platform it's on, fetch it, and either create a new spec from it (if no feature exists yet, the way speckit.specify does) or reconcile an existing spec's sections against it.
+description: Ask the user for an external documentation source for the current feature (e.g. a Confluence page) and which platform it's on, fetch it, and either create a new spec from it (if no feature exists yet, the way speckit.specify does) or reconcile an existing spec's sections against it.
 handoffs:
   - label: Build Technical Plan
     agent: speckit.plan
@@ -16,7 +16,7 @@ scripts:
 $ARGUMENTS
 ```
 
-You **MUST** consider the user input before proceeding (if not empty). If it already looks like a documentation source (a URL, or a `<tool>:<id>` shorthand such as `docmost:<id>` / `confluence:<id>`), treat it as the source and skip straight to the Outline's dispatch step — do not ask again. A `<tool>:<id>` shorthand also names the platform; a bare URL does not, so the platform still needs to be resolved there (see step 2).
+You **MUST** consider the user input before proceeding (if not empty). If it already looks like a documentation source (a URL, or a `<tool>:<id>` shorthand such as `confluence:<id>`), treat it as the source and skip straight to the Outline's dispatch step — do not ask again. A `<tool>:<id>` shorthand also names the platform; a bare URL does not, so the platform still needs to be resolved there (see step 2).
 
 ## Outline
 
@@ -38,12 +38,12 @@ Execution steps:
 2. **Determine the documentation platform and source**:
    - If `$ARGUMENTS` is a `<tool>:<id>` shorthand, that names both the platform (`<tool>`) and the source — use it directly and skip to step 3's **known-platform dispatch**.
    - If `$ARGUMENTS` is a bare URL (no tool prefix), use it as the source but the platform is still unknown — skip to step 3's **auto-match dispatch**.
-   - Otherwise (no usable argument), ask the user for both at once: **"What's the source of documentation for this feature, and which platform is it on?"** List the platforms actually installed as explicit choices — read `.specify/extensions.yml`'s `hooks.before_usespec` entries and offer one option per distinct `extension` value found there (e.g. "Docmost", "Confluence"), plus an "Other — I'll paste the content directly" option (always offered, and the only option when the hook list is empty or unreadable). Wait for their reply with a platform choice and a URL/shorthand.
+   - Otherwise (no usable argument), ask the user for both at once: **"What's the source of documentation for this feature, and which platform is it on?"** List the platforms actually installed as explicit choices — read `.specify/extensions.yml`'s `hooks.before_usespec` entries and offer one option per distinct `extension` value found there (e.g. "Confluence"), plus an "Other — I'll paste the content directly" option (always offered, and the only option when the hook list is empty or unreadable). Wait for their reply with a platform choice and a URL/shorthand.
    - If the reply is "skip", "none", "no", or similar — report that nothing was changed and stop here. Do not treat silence or a refusal as an error. If `HAS_FEATURE` is false, mention `__SPECKIT_COMMAND_SPECIFY__` as the way to create a spec from a typed description instead.
    - If the user picked "Other — I'll paste the content directly", skip straight to step 4's manual-paste fallback.
 
 3. **Dispatch the fetch via extension hooks**:
-   - Check if `.specify/extensions.yml` exists and look for entries under the `hooks.before_usespec` key. (This is the same hook-registration file every other command's extension-hook checks use. `before_usespec` is a custom event owned by this command, not a core Spec Kit event — any installed extension can register a fetch integration under it, exactly as `docmost` and `confluence` do.)
+   - Check if `.specify/extensions.yml` exists and look for entries under the `hooks.before_usespec` key. (This is the same hook-registration file every other command's extension-hook checks use. `before_usespec` is a custom event owned by this command, not a core Spec Kit event — any installed extension can register a fetch integration under it, exactly as `confluence` does.)
    - If the YAML cannot be parsed, tell the user it couldn't be read (include the parser error) and treat this as "no hooks registered" below — do not abort the whole command over it.
    - Filter out hooks where `enabled` is explicitly `false`. Skip any hook with a non-empty `condition` (leave evaluation to the HookExecutor implementation, per the standard convention).
    - **Known-platform dispatch** (step 2 resolved a specific platform — via the `<tool>:<id>` shorthand or the user's explicit choice): filter the remaining hooks to the one whose `extension` field matches the chosen platform (case-insensitive).
@@ -55,7 +55,7 @@ Execution steps:
      - `"matched": true` (whether it succeeded or carries an `error`) — **stop checking further hooks** — this one claimed the reference. Only one fetch extension should ever recognize a given source.
      - `"matched": false` — continue to the next hook.
      - If every registered hook returns `"matched": false`, treat it the same as "no hooks registered": tell the user none of the installed fetch integrations recognize this source, and go to step 4's manual-paste fallback.
-   - If no hooks are registered at all (including the case where `.specify/extensions.yml` doesn't exist): tell the user there's no fetch integration installed for this kind of source (mention that `docmost` and `confluence` extensions provide one) and go to step 4's manual-paste fallback.
+   - If no hooks are registered at all (including the case where `.specify/extensions.yml` doesn't exist): tell the user there's no fetch integration installed for this kind of source (mention that the `confluence` extension provides one) and go to step 4's manual-paste fallback.
 
 4. **Resolve the fetched content**:
    - **A hook returned `"matched": true` with an `error`**: show the `message` to the user. Ask whether to retry with a different source, paste the content manually (continue below), or skip (stop here, nothing changed).
