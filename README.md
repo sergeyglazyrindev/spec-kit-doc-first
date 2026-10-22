@@ -27,3 +27,7 @@ specify extension add --dev /path/to/spec-kit-doc-first/extensions/confluence
 
 See each extension's own README for setup details and `extensions/docsync/README.md`
 for how the fetch contract and hook events work.
+
+## License
+
+MIT — see [LICENSE](LICENSE).
